@@ -23,7 +23,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
 		relationship_value TEXT, 
 		timestamp timeuuid, 
 		weight int, 
-		PRIMARY KEY (object_id, relationship_type, relationship_value, timestamp)
+		PRIMARY KEY ((object_id), relationship_type, relationship_value, timestamp)
 		);		
 		"""
 		)
@@ -35,7 +35,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
 		AND relationship_value IS NOT NULL
 		AND timestamp IS NOT NULL
 		AND weight IS NOT NULL
-		PRIMARY KEY (relationship_value, object_id, relationship_type, timestamp);
+		PRIMARY KEY ((relationship_value), object_id, relationship_type, timestamp);
 		"""
 		)
 
