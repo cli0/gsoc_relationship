@@ -23,7 +23,11 @@ def schema_setup(ip_addresses, username, password, keyspace):
 		relationship_value TEXT, 
 		timestamp timeuuid, 
 		weight int, 
+<<<<<<< HEAD
 		PRIMARY KEY (object_id, relationship_type, relationship_value, timestamp)
+=======
+		PRIMARY KEY ((object_id), relationship_type, relationship_value, timestamp)
+>>>>>>> upstream/master
 		);		
 		"""
 		)
@@ -35,7 +39,11 @@ def schema_setup(ip_addresses, username, password, keyspace):
 		AND relationship_value IS NOT NULL
 		AND timestamp IS NOT NULL
 		AND weight IS NOT NULL
+<<<<<<< HEAD
 		PRIMARY KEY (relationship_value, object_id, relationship_type, timestamp);
+=======
+		PRIMARY KEY ((relationship_value), object_id, relationship_type, timestamp);
+>>>>>>> upstream/master
 		"""
 		)
 
