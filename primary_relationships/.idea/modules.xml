@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/primary_relationships.iml" filepath="$PROJECT_DIR$/.idea/modules/primary_relationships.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/primary_relationships-build.iml" filepath="$PROJECT_DIR$/.idea/modules/primary_relationships-build.iml" />
-    </modules>
-  </component>
-</project>
