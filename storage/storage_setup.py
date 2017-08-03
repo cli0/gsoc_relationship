@@ -50,7 +50,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
         PRIMARY KEY ((feature_type), feature_value, object_id, timestamp);
         """
         )
-    
+
     #Create the Primary Relationships table
 
     session.execute(
@@ -58,7 +58,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
 	feature text,
 	weight double);
 	"""
-	) 
+	)
 
     session.execute(
         """CREATE TABLE IF NOT EXISTS primary_relationships_table(
