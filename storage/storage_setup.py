@@ -29,8 +29,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
         """
         )
 
-    session.execute(
-        """CREATE MATERIALIZED VIEW IF NOT EXISTS mv_feature_type_table AS
+    session.execute("""CREATE MATERIALIZED VIEW IF NOT EXISTS mv_feature_type_table AS
         SELECT * FROM object_knowledge_base_table
         WHERE object_id IS NOT NULL
         AND feature_type IS NOT NULL
@@ -42,8 +41,7 @@ def schema_setup(ip_addresses, username, password, keyspace):
     
     #Create the Primary Relationships table
 
-    session.execute(
-        """CREATE TABLE IF NOT EXISTS primary_relationships_table(
+    session.execute("""CREATE TABLE IF NOT EXISTS primary_relationships_table(
         object_id text,
         timestamp timeuuid,
         imphash blob,
