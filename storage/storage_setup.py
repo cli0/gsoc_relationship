@@ -41,7 +41,8 @@ def schema_setup(ip_addresses, username, password, keyspace):
     
     #Create the Primary Relationships table
 
-    session.execute("""CREATE TABLE IF NOT EXISTS primary_relationships_table(
+    session.execute(
+        """CREATE TABLE IF NOT EXISTS primary_relationships_table(
         object_id text,
         timestamp timeuuid,
         imphash blob,
