@@ -50,7 +50,6 @@ def schema_setup(ip_addresses, username, password, keyspace):
         binary_signature blob,
         domain_requests blob,
         yara_rules blob,
-        av_signatures blob,
         PRIMARY KEY (object_id));
         """
         )
