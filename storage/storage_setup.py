@@ -40,7 +40,6 @@ def schema_setup(ip_addresses, username, password, keyspace):
         )
     
     #Create the Primary Relationships table
-
     session.execute(
         """CREATE TABLE IF NOT EXISTS analytics_primary_relationships(
         object_id text,
