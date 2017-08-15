@@ -1,8 +1,5 @@
-package com.holmesprocessing.relationships.knowledgeBase
+package com.holmesprocessing.analytics.relationship.knowledgeBase
 
-import com.holmesprocessing.relationships.models._
-
-import play.api.libs.json._
 import play.api.libs.json.Json
 import java.util.zip.{GZIPOutputStream, GZIPInputStream}
 import java.io.ByteArrayInputStream

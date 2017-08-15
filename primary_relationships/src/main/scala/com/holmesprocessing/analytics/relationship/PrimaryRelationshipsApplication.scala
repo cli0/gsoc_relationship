@@ -1,10 +1,10 @@
-package com.holmesprocessing.relationships
+package com.holmesprocessing.analytics.relationship
 
-import com.holmesprocessing.relationships.primaryRelationships.PrimaryRelationshipsGenerator
-import com.holmesprocessing.relationships.knowledgeBase.KnowledgeBaseGenerator
-import com.holmesprocessing.relationships.SparkConfig._
+import com.holmesprocessing.analytics.relationship.primaryRelationships.PrimaryRelationshipsGenerator
+import com.holmesprocessing.analytics.relationship.knowledgeBase.KnowledgeBaseGenerator
+import com.holmesprocessing.analytics.relationship.SparkConfig._
 
-import com.datastax.driver.core.utils.UUIDs
+import java.util.UUID
 import com.datastax.spark.connector._
 
 object PrimaryRelationshipsApplication {
@@ -16,7 +16,7 @@ object PrimaryRelationshipsApplication {
     KnowledgeBaseGenerator.run(kb_batch)
 
     //setup primary relationships for a test run.
-    val pk_batch = sc.cassandraTable(keyspace,knowledge_base_table).select("object_id").map(x=> x.get[String]("object_id")).first
+    val pk_batch = sc.cassandraTable(keyspace,analytics_knowledge_base).select("object_id").map(x=> x.get[String]("object_id")).first
     PrimaryRelationshipsGenerator.run(pk_batch)
 
     sc.stop()

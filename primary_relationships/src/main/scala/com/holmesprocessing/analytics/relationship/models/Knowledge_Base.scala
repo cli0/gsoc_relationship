@@ -1,4 +1,4 @@
-package com.holmesprocessing.relationships.models
+package com.holmesprocessing.analytics.relationship.models
 
 import java.util.UUID
 

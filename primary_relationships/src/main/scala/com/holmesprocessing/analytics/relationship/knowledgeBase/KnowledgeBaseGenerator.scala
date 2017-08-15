@@ -1,8 +1,8 @@
-package com.holmesprocessing.relationships.knowledgeBase
+package com.holmesprocessing.analytics.relationship.knowledgeBase
 
-import com.holmesprocessing.relationships.models._
-import com.holmesprocessing.relationships.knowledgeBase.HelperMethods._
-import com.holmesprocessing.relationships.SparkConfig._
+import com.holmesprocessing.analytics.relationship.models.Knowledge_Base
+import com.holmesprocessing.analytics.relationship.knowledgeBase.HelperMethods._
+import com.holmesprocessing.analytics.relationship.SparkConfig._
 
 import com.datastax.spark.connector._
 import com.datastax.driver.core.utils.UUIDs
@@ -18,7 +18,7 @@ object KnowledgeBaseGenerator {
     var knowledge_base_rdd = sc.parallelize(Seq[Knowledge_Base]())
 
     //Input is a List[String] of hashes, the connector can query the table for each element in the batch in one go
-    val results = sc.cassandraTable(keyspace,results_meta_by_sha256).where("sha256 in ?",batch).joinWithCassandraTable(keyspace,results_data_by_sha256).map(x=> (x._1.get[String]("sha256"), x._1.get[String]("service_name"), decompress(x._2.get[Array[Byte]]("results")))).cache()
+    val results = sc.cassandraTable(keyspace,results_meta).where("sha256 in ?",batch).joinWithCassandraTable(keyspace,results_data).map(x=> (x._1.get[String]("sha256"), x._1.get[String]("service_name"), decompress(x._2.get[Array[Byte]]("results")))).cache()
 
     val peinfo_res = results.filter(x=> x._2 == "peinfo")
     val pehash = peinfo_res.map(x=> (x._1, (Json.parse(x._3) \ "pehash").asOpt[String].getOrElse("Undefined"))).filter(x => !x._2.equals("Undefined")).map(x => new Knowledge_Base(x._1, "pehash", compress(x._2.getBytes), UUIDs.timeBased()))
@@ -31,6 +31,6 @@ object KnowledgeBaseGenerator {
     val cuckoo_res = results.filter(x=> x._2 == "CUCKOO")
     val domains = cuckoo_res.map(x=> (x._1, get_cuckoo_urls(x._3))).filter(x=> !x._2.equals("")).map(x => new Knowledge_Base(x._1, "called_domains", compress(x._2.getBytes), UUIDs.timeBased()))
 
-    knowledge_base_rdd.union(pehash).union(imphash).union(signature).union(rules).union(domains).saveToCassandra(keyspace,knowledge_base_table, SomeColumns("object_id", "feature_type", "feature_value", "timestamp"))
+    knowledge_base_rdd.union(pehash).union(imphash).union(signature).union(rules).union(domains).saveToCassandra(keyspace, analytics_knowledge_base, SomeColumns("object_id", "feature_type", "feature_value", "timestamp"))
   }
 }
