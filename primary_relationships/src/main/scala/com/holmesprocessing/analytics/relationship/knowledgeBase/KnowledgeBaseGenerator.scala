@@ -11,7 +11,7 @@ import play.api.libs.json.Json
 
 object KnowledgeBaseGenerator {
 
-
+  /*This routine automatically generates and stores the Knowledge Base entries.*/
   def run(batch: List[String]) = {
 
     //intermediate RDD that acts as storage for everything

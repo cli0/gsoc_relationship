@@ -8,6 +8,7 @@ import com.datastax.spark.connector._
 
 object PrimaryRelationshipsGenerator {
 
+  /*This routines finds, formats and stores primary relationships.*/
   def run(id: String) = {
 
     val pehash = generate_pehash(id)
