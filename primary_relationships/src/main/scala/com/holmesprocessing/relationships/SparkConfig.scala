@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 
 object SparkConfig {
 
-  private val config = ConfigFactory.load("relationships")
+  private val config = ConfigFactory.load("relationship")
 
   val hosts = "127.0.0.1"//config.getString("cassandra.hosts")
   val username = "user"//config.getString("cassandra.username")
