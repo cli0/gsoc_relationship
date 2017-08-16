@@ -17,40 +17,42 @@ def schema_setup(ip_addresses, username, password, keyspace):
 
 	session = cluster_setup(ip_addresses, username, password, keyspace)
 
-	session.execute(
-		"""CREATE TABLE IF NOT EXISTS relationship_primary_object_table(
-		object_id TEXT,
-		relationship_type TEXT,
-		relationship_value TEXT,
-		timestamp timeuuid,
-		PRIMARY KEY ((object_id), relationship_type, relationship_value, timestamp)
-		);
-		"""
-		)
 
-	session.execute(
-		"""CREATE MATERIALIZED VIEW IF NOT EXISTS mv_relationship_primary_object_value_table AS
-		SELECT * FROM relationship_primary_object_table
-		WHERE object_id IS NOT NULL
-		AND relationship_type IS NOT NULL
-		AND relationship_value IS NOT NULL
-		AND timestamp IS NOT NULL
-		PRIMARY KEY ((relationship_value), object_id, relationship_type, timestamp);
-		"""
-		)
+    #Create the Knowledge Base tables and related Materialized Views
+    session.execute(
+        """CREATE TABLE IF NOT EXISTS analytics_knowledge_base(
+        object_id text,
+        feature_type text,
+        feature_value blob,
+        timestamp timeuuid,
+        PRIMARY KEY ((object_id), feature_type, timestamp)
+        );
+        """
+        )
 
-	session.execute(
-		"""CREATE MATERIALIZED VIEW IF NOT EXISTS mv_relationship_primary_object_type_table AS
-		SELECT * FROM relationship_primary_object_table
-		WHERE object_id IS NOT NULL
-		AND relationship_type IS NOT NULL
-		AND relationship_value IS NOT NULL
-		AND timestamp IS NOT NULL
-		PRIMARY KEY ((relationship_value), object_id, relationship_type, timestamp);
-		"""
-		)
+    session.execute("""CREATE MATERIALIZED VIEW IF NOT EXISTS analytics_mv_knowledge_base_by_feature AS
+        SELECT * FROM analytics_knowledge_base
+        WHERE object_id IS NOT NULL
+        AND feature_type IS NOT NULL
+        AND feature_value IS NOT NULL
+        AND timestamp IS NOT NULL
+        PRIMARY KEY ((feature_type), object_id, timestamp);
+        """
+        )
 
-
+    #Create the Primary Relationships table
+    session.execute(
+        """CREATE TABLE IF NOT EXISTS analytics_primary_relationships(
+        object_id text,
+        timestamp timeuuid,
+        imphash blob,
+        pehash blob,
+        binary_signature blob,
+        domain_requests blob,
+        yara_rules blob,
+        PRIMARY KEY (object_id));
+        """
+        )
 
 def main(argv):
 	if (len(argv) == 4):
