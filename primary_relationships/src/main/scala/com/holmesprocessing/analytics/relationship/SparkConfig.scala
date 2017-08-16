@@ -1,11 +1,13 @@
 package com.holmesprocessing.analytics.relationship
 
+import java.io.File
+
 import org.apache.spark.{SparkConf, SparkContext}
 import com.typesafe.config.ConfigFactory
 
 object SparkConfig {
 
-  val config = ConfigFactory.load("relationship")
+  val config = ConfigFactory.parseFile(new File("./config/relationship.conf"))
 
   val hosts = "127.0.0.1"//config.getString("cassandra.hosts")
   val username = "user"//config.getString("cassandra.username")
