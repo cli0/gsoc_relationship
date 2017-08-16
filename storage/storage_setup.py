@@ -11,8 +11,6 @@ def cluster_setup(ip_address, username, password, keyspace):
 	cluster = Cluster(contact_points=contact_point, auth_provider=auth_provider)
 	session = cluster.connect(keyspace)
 	return session
-
-
 def schema_setup(ip_addresses, username, password, keyspace):
 
 	session = cluster_setup(ip_addresses, username, password, keyspace)
@@ -66,4 +64,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-	main(sys.argv[1:])
+    main(sys.argv[1:])
+
