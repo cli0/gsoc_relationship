@@ -9,7 +9,7 @@
 
 The purpose of this project is to develop a system capable of automatically
 identifying and managing the relationships between malware objects (IP addresses,
-Domains, Executables, Files etc). This system will use the analytic results as
+Domains, Executables, Files etc). This system uses the analytic results as
 generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 
 1. Define the malware attributes necessary for relationship detection through querying.
@@ -17,9 +17,9 @@ generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 3. Implement an algorithm for aggregating and scoring the final relationships.
 4. Visualize relationships for the client.
 
-This system will perform malware relationship detection and scoring by using a range of queries and ML algorithms. 
-We will implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole 
-relationship detection and rating process will go through two stages and at the end the user will receive a visual 
+This system performs malware relationship detection and scoring by using a range of queries and ML algorithms. 
+We implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole 
+relationship detection and rating process goes through two stages and at the end the user receives a visual 
 representation of the generated final relationships.
 
 ##### Technology
@@ -89,12 +89,11 @@ transfer relationship. We seek to identify the following:
 #### Knowledge Base Generation
 
 The data we use is provided by the Holmes-Totem and Holmes-Totem-Dynamic services.
-The service results contain a variety of data, some of which is useless to the  
-`Relationship` service. As a result, we first create a Knowledge Base table which
+The service results contain a lot of data, some of which is not necessary for the routines of
+this service to be carried out. As a result, we first create a Knowledge Base table which
 contains every feature of interest for each object we are analyzing. The creation of
 this intermediary table improves query time and forgoes the need for expensive parsing
-and searching for every element in the database.
-The Knowledge Base entries have the following format:
+and searching for every element in the database. The Knowledge Base entries have the following format:
 
 ```
 analytics_knowledge_base
@@ -164,10 +163,10 @@ ml/)
 .html) we have found that objects that share these hashes have a considerable chance of being
 related one way or another. We chose to only look for exact matches and not cluster
 based on hashes. We find that for Big Data, clustering based on the hash can create a lot
-of noise unnecessary noise for the final relationships. For features such as `domain_requests`
+of unnecessary noise for the final relationships. For features such as `domain_requests`
 and `yara_rules`, we use [Jaccard Similarity](https://en.wikipedia.org/wiki/Jaccard_index) to
 calculate the weight. These rules for weight definition are by no means perfect or
-ideal and future work can be done for more detailed scoring methods using yara rules.
+ideal and future work can be done for more detailed scoring methods for services such as Yara.
 
 ### Final Relationships Stage
 
