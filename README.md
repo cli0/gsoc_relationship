@@ -7,9 +7,8 @@
 
 ##### Overview
 
-The purpose of this project is to develop a system capable of automatically
-identifying and managing the relationships between malware objects (IP addresses,
-Domains, Executables, Files etc). This system uses the analytic results as
+The purpose of this project is to develop a system capable of automatically identifying and managing the relationships 
+between malware objects (IP addresses, Domains, Executables, Files etc). This system uses the analytic results as
 generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 
 1. Define the malware attributes necessary for relationship detection through querying.
