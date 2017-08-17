@@ -10,7 +10,6 @@ cassandra {
   results_meta_by_sha256 = "results_meta_by_sha256"
   results_data_by_sha256 = "results_data_by_sha256"
 }
-
 spark {
   appName = "relationships"
   master = "localhost"
