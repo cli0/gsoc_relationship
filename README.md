@@ -17,15 +17,14 @@ generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 3. Implement an algorithm for aggregating and scoring the final relationships.
 4. Visualize relationships for the client.
 
-This system will perform malware relationship detection and scoring by using a range of queries and ML algorithms. We will 
-implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole 
+This system will perform malware relationship detection and scoring by using a range of queries and ML algorithms. 
+We will implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole 
 relationship detection and rating process will go through two stages and at the end the user will receive a visual 
 representation of the generated final relationships.
 
 ##### Technology
 
-This project uses Apache Spark 2.0 to perform its analytics and Apache Cassandra
-3.10 for its backend.
+This project uses Apache Spark 2.0 to perform its analytics and Apache Cassandra 3.10 for its backend.
 
 ## Defining Relationships
 
