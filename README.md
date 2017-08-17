@@ -5,7 +5,7 @@
 ![GitHub Logo](/images/architecture.png)
 *Figure 1: System Architecture*
 
-###### Overview
+##### Overview
 
 The purpose of this project is to develop a system capable of automatically
 identifying and managing the relationships between malware objects (IP addresses,
@@ -19,6 +19,11 @@ generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 4. Visualize relationships for the client.
 
 This system will perform malware relationship detection and scoring by using a range of queries and ML algorithms. We will implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole relationship detection and rating process will go through two stages and at the end the user will receive a visual representation of the generated final relationships.
+
+##### Technology
+
+This project uses Apache Spark 2.0 to perform its analytics and Apache Cassandra
+3.10 for its backend.
 
 ## Defining Relationships
 
