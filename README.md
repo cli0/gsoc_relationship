@@ -20,28 +20,17 @@ generated and stored by Holmes-Totem and Holmes-Totem-Dynamic. The goals are:
 
 This system will perform malware relationship detection and scoring by using a range of queries and ML algorithms. We will implement and optimize some existing and new ML algorithms in order to ensure accuracy and efficiency. The whole relationship detection and rating process will go through two stages and at the end the user will receive a visual representation of the generated final relationships.
 
-###### Technology
-
-We will use **Apache Spark** and **Tensorflow** for writing and running the
-necessary Queries and Machine Learning algorithms. The system will use a mix of
-batch and stream processing so **Spark Streaming** and/or **Apache
-Beam** are the framework of choice. **RabbitMQ** is the AMQP library of choice to
-support the streaming functionality. The data is stored in **Apache Cassandra**.
-Since this is a work in progress, there is a good chance that some new technologies and frameworks may be added along the way. This section will be updated accordingly.
-
 ## Defining Relationships
 
-The relationship detection process goes through two stages. The first stage
-(Offline Training) is
-going to generate the first level of relationships, while the second stage (Final Relationships Generate) will
-define the final relationships and their score by using the data created from
-the first stage as seed.
+The relationship detection process goes through two stages. The first stage is
+going to extract the necessary features that define relationships and establish potential relationships (primary relationships). The second stage will utilize the data generated
+by the first stage to define the final relationships and their confidence score.
 
-From a technical standpoint, the analytics of the first stage happen independently of any user requests. The Query and ML components automatically perform all queries and ML algorithms for new malware analytic results based on specific events and triggers. All of the data generated at this stage is permanently stored on Cassandra using an appropriate schema. (During the rest of the section, I may refer to the primary relationships simply as relationships for simplicity’s sake.)
+From a technical standpoint, the analytics of the first stage happen independently of any user requests. All of the data generated at this stage is permanently stored in Cassandra.
 
 ###### Primary Relationships
 
-There are 4 types of artefacts in our database: IP addresses, Domains, Files, and Binary Executables. All of these types can potentially have a relationship with each other.
+There are 4 potential types of artefacts in our database: IP addresses, Domains, Files, and Binary Executables. All of these types can potentially have a relationship with each other.
 
 *For example:* An executable may issue a call to a specific domain who is associated with one or more IPs, which might be in turn related to other artefacts. In this scenario we already have identified several relationships:
 1. Executable <-> Domain
@@ -53,7 +42,8 @@ The whole purpose of this stage of the process is to look for meaningful primary
 ![GitHub Logo](/images/Relationship_Types.png)
 *Figure 2: High-level view of artefact relationships*
 
-The relationships between artefacts will be defined in detail by the indicators that the Querying and ML components will detect/calculate. The first step of relationships discovery is finding good indicators of relationships between the different artefacts. These indicators are extracted by processing the analytic results from Holmes Totem (Dynamic). The components responsible for performing this analytic processes are the Query and ML components.
+The relationships between artefacts are defined by a (continuously-growing) predefined set of
+features. The first step of relationships discovery is extracting these features of interest from the Totem results and storing connections between artefacts based on these features.
 
 ###### Final Relationships
 
@@ -62,73 +52,112 @@ The final relationships consist of direct relationships and indirect relationshi
 
 (The column: Final relationship has same content to the column: Direct relationship, so they are merged into one column.)
 
- Final relationship (Direct relationship) | Indirect relationships 
+ Final relationship (Direct relationship) | Indirect relationships
   ----------------------------------------- | -------------
   Malware -> Malware | \
-  Malware -> Domain  | 1. Malware -> Malware -> IP </br>2. Malware -> IP -> Domain 
+  Malware -> Domain  | 1. Malware -> Malware -> IP </br>2. Malware -> IP -> Domain
   Malware -> IP | 1. Malware -> Malware -> IP </br> 2. Malware -> Domain -> IP  
   Domain -> Malware | 1. Domain -> Malware -> Malware </br> 2. Domain -> Domain -> Malware </br> 3. Domain -> IP -> Malware
   Domain -> Domain | 1. Domain -> Malware -> Domain </br> 2. Domain -> IP -> Domain </br> 3. Domain -> Malware -> Malware -> Domain (optional)
   Domain -> IP | 1. Domain -> Malware -> IP </br> 2. Domain -> Domain -> IP </br> 3. Domain -> IP -> IP
   IP | All IP final relationships are similar to Domain final relationships
-  
+
 *Table 1: Definitions for Final relationships*
-
-## Storage and Schema
-
-The storage schema will store the primary relationships for both the Query and the ML components. The schema should be easily and efficiently queried in order to provide stage 2 with all the necessary data with as little lag and computational effort as possible. The schema table will contain all the relationship_types and relationship_values generated by the Query and ML components. The relationship_types correspond to the ones that can be seen in Figure 2. The possible relationship_values can be seen in Table 1. Currently, Table 1 only includes potential relationship data based on the information provided by the Query Component. The table will be updated as the components are developed.
-
-The table schema developed in this stage should satisfy 2 main queries:
-
-1. **Q1:** Give me all relationships for obj_id
-2. **Q2:** Give me all objects that subscribe to relationship_value
-3. (**Q3:** Give me all objects that subscribe to relationship_type)
-
-![GitHub Logo](/images/schema.png)
-
-*Figure 3: Table View*
-
-The picture above represents the two main tables that should satisfy the queries from Stage 2.
-The original base table easily satisfies Q1. The table created through the MV can satisfy Q2.
-Even Q3 can be easily addressed with a slightly different MV.
-
-The relationship values for each primary relationship can be either direct values or references unique identifiers that can be used to query lookup tables for additional details on the relationship value. Lookup tables are generated for a specific subset of relationship values.
 
 
 ## Implementation
 
-#### Offline Search and Training
+### Offline Stage
 
-###### Query Component
+#### Knowledge Base Generation
 
+The data we use is provided by the Holmes-Totem and Holmes-Totem-Dynamic services.
+The service results contain a variety of data, some of which is useless to the  
+`Relationship` service. As a result, we first create a Knowledge Base table which
+contains every feature of interest for each object we are analyzing. The creation of
+this intermediary table improves query time and forgoes the need for expensive parsing
+and searching for every element in the database.
+The Knowledge Base entries have the following format:
 
-This component will look for atomic indicators of relationships. Atomic indicators are either identical values that can be shared by artefacts’ analytic results or calculated values that are used to provide some measure of similarity between artefacts. The Query component will generate the following relationship_types and values. These primary relationships will also have an assigned weight that can be used by the second stage of the process to calculate the final relationships.
+```
+analytics_knowledge_base
+  - object_id text,
+  - feature_type text,
+  - feature_value blob,
+  - timestamp timeuuid```
 
- (relationship_type, service, relationship_value)  | weight_definition
- ------------------------------------------------- | -----------------
- (imphash_similar_to, PEInfo, imphash)  |   
- (pehash_similar_to, PEInfo, pehash) |  
- (signed_by, PEInfo, signature) |  
- (communicated_with_ip, CUCKOO, ip) |  
- (communicated_with_dom, CUCKOO, domain) |  
- (related_to_ip, DNSMeta, ip) |  
- (resolves_to_ip, DNSMeta, A Record )  |  
- (resolves_to_ip, DNSMeta, AAAA Record)  |  
- (related_to, DNSMeta, metadata)  |  
- (av_similar_to, VirusTotal, signature_similarity) |  
- (yara_similar_to, YARA, complex_AV_match) |  
+The features of interest for the analysis are predefined by the analyst and subject
+to future extensions. So far, our system uses the following features as indicators
+of relationships:
 
-*Table 2: Definitions for primary relationships*
+ feature_type  | from service
+ ------------- | -------------
+ imphash  | PEInfo
+ pehash | PEInfo
+ binary_signature | PEInfo
+ domain_requests | CUCKOO
+ yara_rules | Yara  
 
-###### ML Component
+*Table 2: Definitions for feature types*
 
-This component will utilize ML algorithms to train models based on a labeled dataset and then assign every new unknown incoming artefact (depending on the type of artefact) to one of the trained malicious clusters/classes.
+The features themselves are saved as well but before storage they are compressed
+with gzip, hence the blob type. The de/compression methods we use were slightly adapted
+from the following [repository](https://gist.github.com/owainlewis/1e7d1e68a6818ee4d50e).
+The compression method in this repository is very fast, lightweight and incurs little
+to no speed penalties based on our testing.
+
+The routine for generating the Knowledge
+Base is a batch routine that receives a list of object IDs to extract and store all
+the relevant features. This routine can be initiated whenever the user wants to populate the
+table with new entries. Tests on our servers have proved the routine to be fairly
+efficient:
+
+```
+100 hashes -> 7s
+1,000 hashes -> 7s
+10,000 hashes -> 23s
+```
+
+#### Primary Relationships Generation
+
+Primary Relationships are initial aggregations of the Knowledge Base data in order
+to generate and store connections between objects based on their feature values.
+More concretely, primary relationships store for each and every object in the database,
+a list of identifiers for other objects with which they share a feature similarity of sorts.
+The storage for Primary Relationships was inspired in part by [TitanDB]("https://www.slideshare.net/knowfrominfo/titan-big-graph-data-with-cassandra"). For each feature type, the primary relationships generation routine looks for matches, assigns
+a weight to each match, and stores the result as Json array:
+
+```
+{
+  {"sha256":<text>, "weight": <Double>},
+  {"sha256":<text>, "weight": <Double>},
+  ...
+}
+```
+The weights for these primary relationships are defined depending on the feature type. For
+ example, features like `imphash`, `pehash` and `binary_signature` are
+atomic values. For an exact same match for `imphash` and `pehash`, we assign the
+weight of 0.5, whereas an exact match for `binary_signature` we assign 1.0 . In a way,
+these weights are arbitrary values from an analyst. After extensive statistical analysis
+as well as
+[literature](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski_ht
+ml/)
+[research](https://www.fireeye.com/blog/threat-research/2014/01/tracking-malware-import-hashing
+.html) we have found that objects that share these hashes have a considerable chance of being
+related one way or another. We chose to only look for exact matches and not cluster
+based on hashes. We find that for Big Data, clustering based on the hash can create a lot
+of noise unnecessary noise for the final relationships. For features such as `domain_requests`
+and `yara_rules`, we use [Jaccard Similarity](https://en.wikipedia.org/wiki/Jaccard_index) to
+calculate the weight. These rules for weight definition are by no means perfect or
+ideal and future work can be done for more detailed scoring methods using yara rules.
+
+### Final Relationships Stage
 
 #### Final Relationships Score Generator
 
 ###### Direct relationship score algorithm
 
-The direct relationship score algorithm gives the similarity score between the object queried and the related object. 
+The direct relationship score algorithm gives the similarity score between the object queried and the related object.
 The Figure 4 below shows the design of this algorithm. The input: rel\_type scores are extracted from the primary relationship table. An algorithm tuning the weights of each score will be shown in the next paragraph. The final relationship score is the sum of (weight × rel\_type score).  
 This algorithm is also used to tune the weights of each score. The loss function is the sum of these final scores when the queried objects are in the different classifcations and their final score above a threshold. Finally, minimizing the loss measure by gradient descent to get proper weights.
 
@@ -146,6 +175,31 @@ The indirect relationship score algorithm considers two parts and is shown in Fi
 
 *Figure 5: The Schematic diagram of indirect relationship score algorithm*
 
+## Storage
+
+### Staging Phase
+
+The following are the table schematics as generated in Cassandra.
+
+<p align="center">
+  <img src="/images/storage.png" height="330" width="400">
+</p>
+*Figure 3: Table View*
+
+The table descriptions are as follows:
+
+`analytics_knowledge_base` contains the Knowledge Base as described in the previous
+section.
+
+`analytics_mv_knowledge_base_by_feature` is a materialized view of `analytics_knowledge_base`
+with feature_type as partition key. This table is used to enable efficient querying in
+subroutines.
+
+`analytics_primary_relationships` is the table where primary relationships are stored,
+one entry per object.
+
+
+
 ## Visualization (WIP)
 
 #### Web Page
@@ -154,7 +208,7 @@ The indirect relationship score algorithm considers two parts and is shown in Fi
 
 Query page provides the searching for hash, domain, and IP and returns relationship page.
 
-###### Relationship Page 
+###### Relationship Page
 
 Relationship page is designed by D3.js and shows the relationship result.
 
