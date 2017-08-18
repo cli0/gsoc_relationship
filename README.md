@@ -55,8 +55,7 @@ storing connections between artefacts based on these features.
 
 ###### Final Relationships
 
-The final relationships define how objects in the system are associated with each other. These are created by analyzing the primary relationships and determining if and how strongly objects are related. Currently, we focus on relationships among
-malwares, domains, and IPs.  
+The final relationships define how objects in the system are associated with each other. These are created by analyzing the primary relationships and determining if and how strongly objects are related. Currently, we focus on relationships among malwares, domains, and IPs.  
 The final relationships consist of direct relationships and indirect relationships. The direct relationships can be
 retrieved directly from primary relationships, and the indirect relationships need other objects as the intermediary to
 transfer relationship. We seek to identify the following:  
@@ -150,10 +149,8 @@ The weights for these primary relationships are defined depending on the feature
 atomic values. For an exact same match for `imphash` and `pehash`, we assign the
 weight of 0.5, whereas an exact match for `binary_signature` we assign 1.0 . In a way,
 these weights are arbitrary values from an analyst. After extensive statistical analysis
-as well as
-[literature](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski_html/)
-[research](https://www.fireeye.com/blog/threat-research/2014/01/tracking-malware-import-hashing.html) we have found that objects that share these hashes have a considerable chance of being
-related one way or another. We chose to only look for exact matches and not cluster
+as well as [literature](https://www.usenix.org/legacy/event/leet09/tech/full_papers/wicherski/wicherski_html/)
+[research](https://www.fireeye.com/blog/threat-research/2014/01/tracking-malware-import-hashing.html) we have found that objects that share these hashes have a considerable chance of being related one way or another. We chose to only look for exact matches and not cluster
 based on hashes. We find that for Big Data, clustering based on the hash can create a lot
 of unnecessary noise for the final relationships. For features such as `domain_requests`
 and `yara_rules`, we use [Jaccard Similarity](https://en.wikipedia.org/wiki/Jaccard_index) to
@@ -170,9 +167,7 @@ The direct relationship score algorithm gives the similarity score between the o
 The Figure 4 below shows the design of this algorithm. The input: rel\_type scores are extracted from the primary
 relationship table. An algorithm tuning the weights of each score will be shown in the next paragraph. The final
 relationship score is the sum of (weight × rel\_type score).  
-This algorithm is also used to tune the weights of each score. The loss function is the sum of these final scores when the
-queried objects are in the different classifcations and their final score above a threshold. Finally, minimizing the loss
-measure by gradient descent to get proper weights.
+This algorithm is also used to tune the weights of each score. The loss function is the sum of these final scores when the queried objects are in the different classifcations and their final score above a threshold. Finally, minimizing the loss measure by gradient descent to get proper weights.
 
 ![GitHub Logo](/images/direct_relationship_score.png)
 
@@ -183,8 +178,7 @@ measure by gradient descent to get proper weights.
 The indirect relationship score algorithm considers two parts and is shown in Figure 5.  
 1). To a certain indirect relationship, it is consisted by direct relationships. We multiply the scores of direct
 relationships as indirect relationship score.  
-2). To related objects, the kind of relationships (including direct relationships and indirect relationships ) is one or
-more. We use the sigmoid function to the sum of these relationship scores.   
+2). To related objects, the kind of relationships (including direct relationships and indirect relationships ) is one or more. We use the sigmoid function to the sum of these relationship scores.   
 
 ![GitHub Logo](/images/indirect_relationship_score.png)
 
