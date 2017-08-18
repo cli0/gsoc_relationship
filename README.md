@@ -49,16 +49,12 @@ artefacts based on the available analytic results, and store these relationships
 ![GitHub Logo](/images/Relationship_Types.png)
 *Figure 2: High-level view of artefact relationships*
 
-The relationships between artefacts are defined by a (continuously-growing) predefined set of
-features. The first step of relationships discovery is extracting these features of interest from the Totem results and
-storing connections between artefacts based on these features.
+The relationships between artefacts are defined by a (continuously-growing) predefined set of features. The first step of relationships discovery is extracting these features of interest from the Totem results and storing connections between artefacts based on these features.
 
 ###### Final Relationships
 
 The final relationships define how objects in the system are associated with each other. These are created by analyzing the primary relationships and determining if and how strongly objects are related. Currently, we focus on relationships among malwares, domains, and IPs.  
-The final relationships consist of direct relationships and indirect relationships. The direct relationships can be
-retrieved directly from primary relationships, and the indirect relationships need other objects as the intermediary to
-transfer relationship. We seek to identify the following:  
+The final relationships consist of direct relationships and indirect relationships. The direct relationships can be retrieved directly from primary relationships, and the indirect relationships need other objects as the intermediary to transfer relationship. We seek to identify the following:  
 
 (The column: Final relationship has same content to the column: Direct relationship, so they are merged into one column.)
 
