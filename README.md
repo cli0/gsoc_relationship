@@ -28,15 +28,11 @@ components of the project use the library [TensorFlowOnSpark](https://github.com
 #### Defining and Modeling Relationships
 
 [This](https://github.com/HolmesProcessing/gsoc_relationship/tree/master/primary_relationships) is the Spark Application responsible for generating
-the Knowledge Base and Primary Relationships for this 
-project. This application performs batch analytics and storage. To run the application,
-please enter your configurations directly in the ```SparkConfig.scala``` file.
+the Knowledge Base and Primary Relationships for this project. This application performs batch analytics and storage. To run the application, first run the script in python to set up the necessary tables in Cassandra. Before running the application, please enter your configurations directly in the ```SparkConfig.scala``` file.
 
-***Warning***: Right now, I haven't found a way to read the typesafe config file 
-during the spark routine. This problem should be fixed in the near future.
+***Warning***: Right now, I haven't found a way to read the typesafe config file during the spark routine. This problem should be fixed in the near future.
 
-To test the application, create a fat jar by running ``` sbt assembly ```. 
-Afterwards, you can run the application on your spark cluster using:
+To test the application, create a fat jar by running ``` sbt assembly ```. Afterwards, you can run the application on your spark cluster using the following command:
 
 ```> /path/to/spark-submit --class com.holmesprocessing.analytics.relationship.PrimaryRelationshipsApplication relationship-assembly-1.0.jar```
 
