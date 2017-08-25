@@ -38,6 +38,4 @@ during the spark routine. This problem should be fixed in the near future.
 
 To test the application, create a fat jar by running ``` sbt assembly ```. 
 Afterwards, you can run the application on your spark cluster using:
-
 ```> /path/to/spark-submit --class com.holmesprocessing.analytics.relationship.PrimaryRelationshipsApplication relationship-assembly-1.0.jar```
-
