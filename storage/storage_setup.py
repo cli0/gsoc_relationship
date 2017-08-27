@@ -5,7 +5,6 @@ from cassandra.auth import PlainTextAuthProvider
 #User arguments should contain the following content in that order: ip address, username, password, keyspace
 
 def cluster_setup(ip_address, username, password, keyspace):
-<<<<<<< HEAD
     auth_provider = PlainTextAuthProvider(username=username, password=password)
     contact_point = []
     contact_point.append(ip_address)
@@ -13,23 +12,10 @@ def cluster_setup(ip_address, username, password, keyspace):
     session = cluster.connect(keyspace)
     return session
 
-
-=======
-	auth_provider = PlainTextAuthProvider(username=username, password=password)
-	contact_point = []
-	contact_point.append(ip_address)
-	cluster = Cluster(contact_points=contact_point, auth_provider=auth_provider)
-	session = cluster.connect(keyspace)
-	return session
->>>>>>> 5368ae74f03fcd0a043880feef92941fd46f4ee9
 def schema_setup(ip_addresses, username, password, keyspace):
 
-	session = cluster_setup(ip_addresses, username, password, keyspace)
+    session = cluster_setup(ip_addresses, username, password, keyspace)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 5368ae74f03fcd0a043880feef92941fd46f4ee9
     #Create the Knowledge Base tables and related Materialized Views
     session.execute(
         """CREATE TABLE IF NOT EXISTS analytics_knowledge_base(
@@ -66,12 +52,9 @@ def schema_setup(ip_addresses, username, password, keyspace):
         PRIMARY KEY (object_id));
         """
         )
-<<<<<<< HEAD
-
-=======
->>>>>>> 5368ae74f03fcd0a043880feef92941fd46f4ee9
 
 def main(argv):
+	
 	if (len(argv) == 4):
 		schema_setup(argv[0],argv[1],argv[2],argv[3])
 		print "Storage setup was successful."
@@ -84,7 +67,4 @@ def main(argv):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-<<<<<<< HEAD
-=======
 
->>>>>>> 5368ae74f03fcd0a043880feef92941fd46f4ee9
